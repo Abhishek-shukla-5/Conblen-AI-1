@@ -5,13 +5,11 @@ import {
   Typography, 
   Button, 
   Paper, 
-  Divider, 
   Switch,
   FormControlLabel,
   List,
   ListItem,
   ListItemText,
-  ListSubheader,
   Card,
   CardContent,
   CardActions,
@@ -22,6 +20,9 @@ import {
 } from '@mui/material';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
+import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 interface SettingsProps {
   darkMode: boolean;
@@ -29,11 +30,11 @@ interface SettingsProps {
 }
 
 const Settings: React.FC<SettingsProps> = ({ darkMode, toggleDarkMode }) => {
+  const { currentUser, logout } = useAuth();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [severity, setSeverity] = useState<AlertColor>('success');
-  
-  const theme = useTheme();
   
   const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
@@ -43,10 +44,18 @@ const Settings: React.FC<SettingsProps> = ({ darkMode, toggleDarkMode }) => {
   };
 
   const handleUpgradeToPro = () => {
-    // In a real app, this would redirect to a payment page
     setMessage('This is a demo app. Upgrade functionality is not implemented.');
     setSeverity('info');
     setOpen(true);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/login');
+    } catch (error) {
+      console.error('Failed to log out:', error);
+    }
   };
 
   return (
@@ -64,7 +73,7 @@ const Settings: React.FC<SettingsProps> = ({ darkMode, toggleDarkMode }) => {
             <ListItem>
               <ListItemText 
                 primary="Email" 
-                secondary="demo@conblenai.app" 
+                secondary={currentUser?.email} 
               />
             </ListItem>
             <ListItem>
@@ -86,7 +95,7 @@ const Settings: React.FC<SettingsProps> = ({ darkMode, toggleDarkMode }) => {
               control={
                 <Switch 
                   checked={darkMode} 
-                  onChange={toggleDarkMode} 
+                  onChange={toggleDarkMode}
                 />
               }
               label=""
@@ -151,6 +160,16 @@ const Settings: React.FC<SettingsProps> = ({ darkMode, toggleDarkMode }) => {
             ConblenAI helps entrepreneurs validate and improve their startup ideas using AI-powered analysis and personalized assistance.
           </Typography>
         </Paper>
+
+        <Button
+          variant="outlined"
+          color="error"
+          startIcon={<LogoutIcon />}
+          onClick={handleLogout}
+          sx={{ mt: 4 }}
+        >
+          Logout
+        </Button>
       </Box>
       
       <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>

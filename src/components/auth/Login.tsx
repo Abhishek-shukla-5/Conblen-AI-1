@@ -5,7 +5,6 @@ import {
   Typography, 
   TextField, 
   Button, 
-  Grid, 
   Link, 
   Paper,
   Divider,
@@ -40,7 +39,7 @@ const Login: React.FC = () => {
       setError('');
       setLoading(true);
       await login(email, password);
-      navigate('/dashboard');
+      navigate('/');
     } catch (err) {
       setError('Failed to sign in. Please check your credentials.');
       setOpen(true);
@@ -54,7 +53,7 @@ const Login: React.FC = () => {
       setError('');
       setLoading(true);
       await loginWithGoogle();
-      navigate('/dashboard');
+      navigate('/');
     } catch (err) {
       setError('Failed to sign in with Google.');
       setOpen(true);

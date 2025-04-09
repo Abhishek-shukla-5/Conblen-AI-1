@@ -1,176 +1,158 @@
-import React, { useState } from 'react';
-import { 
-  AppBar, 
-  Toolbar, 
-  Typography, 
-  Button, 
-  IconButton, 
-  Box, 
-  Drawer, 
-  List, 
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Divider,
+import React from 'react';
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  Box,
+  useTheme,
   Avatar,
-  useMediaQuery,
-  useTheme
+  IconButton,
 } from '@mui/material';
-import { Link, useLocation } from 'react-router-dom';
-import MenuIcon from '@mui/icons-material/Menu';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import LightbulbIcon from '@mui/icons-material/Lightbulb';
-import ChatIcon from '@mui/icons-material/Chat';
-import SettingsIcon from '@mui/icons-material/Settings';
-import DarkModeIcon from '@mui/icons-material/DarkMode';
-import LightModeIcon from '@mui/icons-material/LightMode';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
 
 interface NavbarProps {
-  darkMode: boolean;
+  isDarkMode: boolean;
   toggleDarkMode: () => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ darkMode, toggleDarkMode }) => {
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const location = useLocation();
+const Navbar: React.FC<NavbarProps> = ({ isDarkMode, toggleDarkMode }) => {
+  const { currentUser, logout } = useAuth();
+  const navigate = useNavigate();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  
-  const navItems = [
-    { title: 'Dashboard', path: '/', icon: <DashboardIcon /> },
-    { title: 'Idea Evaluator', path: '/idea-evaluator', icon: <LightbulbIcon /> },
-    { title: 'AI Assistant', path: '/ai-assistant', icon: <ChatIcon /> },
-    { title: 'Settings', path: '/settings', icon: <SettingsIcon /> }
-  ];
-  
-  const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
-    if (
-      event.type === 'keydown' &&
-      ((event as React.KeyboardEvent).key === 'Tab' ||
-        (event as React.KeyboardEvent).key === 'Shift')
-    ) {
-      return;
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/login');
+    } catch (error) {
+      console.error('Failed to log out:', error);
     }
-    setDrawerOpen(open);
   };
 
-  const drawer = (
-    <Box
-      sx={{ width: 250 }}
-      role="presentation"
-      onClick={toggleDrawer(false)}
-      onKeyDown={toggleDrawer(false)}
-    >
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', py: 2 }}>
-        <Avatar sx={{ mb: 1, bgcolor: 'primary.main', width: 60, height: 60 }}>
-          <LightbulbIcon sx={{ fontSize: 30 }} />
-        </Avatar>
-        <Typography variant="h6" component="div">
-          ConblenAI
-        </Typography>
-      </Box>
-      
-      <Divider />
-      
-      <List>
-        {navItems.map((item) => (
-          <ListItem key={item.title} disablePadding>
-            <ListItemButton
-              component={Link}
-              to={item.path}
-              selected={location.pathname === item.path}
-              sx={{
-                '&.Mui-selected': {
-                  backgroundColor: 'rgba(74, 110, 181, 0.1)',
-                  '&:hover': {
-                    backgroundColor: 'rgba(74, 110, 181, 0.2)',
-                  },
-                },
-              }}
-            >
-              <ListItemIcon>
-                {item.icon}
-              </ListItemIcon>
-              <ListItemText primary={item.title} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-      
-      <Divider />
-      
-      <List>
-        <ListItem disablePadding>
-          <ListItemButton onClick={toggleDarkMode}>
-            <ListItemIcon>
-              {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
-            </ListItemIcon>
-            <ListItemText primary={darkMode ? 'Light Mode' : 'Dark Mode'} />
-          </ListItemButton>
-        </ListItem>
-      </List>
-    </Box>
-  );
-
   return (
-    <>
-      <AppBar position="static">
-        <Toolbar>
-          {isMobile ? (
-            <IconButton
-              size="large"
-              edge="start"
-              color="inherit"
-              aria-label="menu"
-              sx={{ mr: 2 }}
-              onClick={toggleDrawer(true)}
-            >
-              <MenuIcon />
-            </IconButton>
-          ) : null}
+    <AppBar 
+      position="static" 
+      elevation={0}
+      sx={{
+        background: 'linear-gradient(45deg, #4f46e5, #ec4899)',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
+      }}
+    >
+      <Toolbar>
+        <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Button
+            component={RouterLink}
+            to="/"
+            sx={{
+              color: 'white',
+              fontWeight: 600,
+              '&:hover': {
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+              },
+            }}
+          >
+            Home
+          </Button>
+          <Button
+            component={RouterLink}
+            to="/chat"
+            sx={{
+              color: 'white',
+              fontWeight: 600,
+              '&:hover': {
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+              },
+            }}
+          >
+            AI Assistant
+          </Button>
+          <Button
+            component={RouterLink}
+            to="/evaluate"
+            sx={{
+              color: 'white',
+              fontWeight: 600,
+              '&:hover': {
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+              },
+            }}
+          >
+            Evaluate Your Startup
+          </Button>
+        </Box>
+
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <IconButton onClick={toggleDarkMode} color="inherit">
+            {isDarkMode ? <Brightness7Icon /> : <Brightness4Icon />}
+          </IconButton>
           
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-              ConblenAI
-            </Link>
-          </Typography>
-          
-          {!isMobile && (
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              {navItems.map((item) => (
-                <Button
-                  key={item.title}
-                  color="inherit"
-                  component={Link}
-                  to={item.path}
-                  sx={{ 
-                    mx: 1,
-                    borderBottom: location.pathname === item.path ? '2px solid white' : 'none',
-                    borderRadius: 0,
-                    paddingBottom: '4px'
-                  }}
-                >
-                  {item.title}
-                </Button>
-              ))}
-              
-              <IconButton color="inherit" onClick={toggleDarkMode} sx={{ ml: 1 }}>
-                {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
-              </IconButton>
-            </Box>
+          {currentUser ? (
+            <>
+              <Button
+                component={RouterLink}
+                to="/profile"
+                sx={{
+                  color: 'white',
+                  fontWeight: 600,
+                  '&:hover': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  },
+                }}
+              >
+                Profile
+              </Button>
+              <Button
+                onClick={handleLogout}
+                sx={{
+                  color: 'white',
+                  fontWeight: 600,
+                  '&:hover': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  },
+                }}
+              >
+                Logout
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                component={RouterLink}
+                to="/login"
+                sx={{
+                  color: 'white',
+                  fontWeight: 600,
+                  '&:hover': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  },
+                }}
+              >
+                Login
+              </Button>
+              <Button
+                component={RouterLink}
+                to="/signup"
+                variant="contained"
+                sx={{
+                  backgroundColor: 'white',
+                  color: '#4f46e5',
+                  fontWeight: 600,
+                  '&:hover': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                  },
+                }}
+              >
+                Sign Up
+              </Button>
+            </>
           )}
-        </Toolbar>
-      </AppBar>
-      
-      <Drawer
-        anchor="left"
-        open={drawerOpen}
-        onClose={toggleDrawer(false)}
-      >
-        {drawer}
-      </Drawer>
-    </>
+        </Box>
+      </Toolbar>
+    </AppBar>
   );
 };
 

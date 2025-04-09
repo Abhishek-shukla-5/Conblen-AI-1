@@ -222,4 +222,114 @@ const getTheme = (mode: PaletteMode) => createTheme({
 });
 
 export const lightTheme = getTheme('light');
-export const darkTheme = getTheme('dark'); 
+export const darkTheme = getTheme('dark');
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#6366F1',
+      light: '#818CF8',
+      dark: '#4F46E5',
+      contrastText: '#ffffff',
+    },
+    secondary: {
+      main: '#EC4899',
+      light: '#F472B6',
+      dark: '#DB2777',
+      contrastText: '#ffffff',
+    },
+    background: {
+      default: '#F8FAFC',
+      paper: '#ffffff',
+    },
+    text: {
+      primary: '#1E293B',
+      secondary: '#64748B',
+    },
+  },
+  typography: {
+    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+    h1: {
+      fontWeight: 700,
+    },
+    h2: {
+      fontWeight: 700,
+    },
+    h3: {
+      fontWeight: 600,
+    },
+    h4: {
+      fontWeight: 600,
+    },
+    h5: {
+      fontWeight: 600,
+    },
+    h6: {
+      fontWeight: 600,
+    },
+    button: {
+      textTransform: 'none',
+      fontWeight: 600,
+    },
+  },
+  shape: {
+    borderRadius: 12,
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: 8,
+          padding: '10px 24px',
+          fontSize: '1rem',
+          boxShadow: 'none',
+          '&:hover': {
+            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+          },
+        },
+        containedPrimary: {
+          background: 'linear-gradient(45deg, #6366F1, #4F46E5)',
+          '&:hover': {
+            background: 'linear-gradient(45deg, #4F46E5, #6366F1)',
+          },
+        },
+        containedSecondary: {
+          background: 'linear-gradient(45deg, #EC4899, #DB2777)',
+          '&:hover': {
+            background: 'linear-gradient(45deg, #DB2777, #EC4899)',
+          },
+        },
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          borderRadius: 12,
+          boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+        },
+        elevation1: {
+          boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+        },
+        elevation2: {
+          boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+        },
+        elevation3: {
+          boxShadow: '0 8px 20px rgba(0,0,0,0.1)',
+        },
+        elevation4: {
+          boxShadow: '0 12px 24px rgba(0,0,0,0.12)',
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          borderRadius: 12,
+          boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+        },
+      },
+    },
+  },
+});
+
+export default theme; 

@@ -5,12 +5,12 @@ import {
   Typography, 
   TextField, 
   Button, 
-  Grid, 
   Link, 
   Paper,
   Divider,
   Snackbar,
-  Alert
+  Alert,
+  CircularProgress
 } from '@mui/material';
 import GoogleIcon from '@mui/icons-material/Google';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
@@ -23,6 +23,7 @@ const Signup: React.FC = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const [severity, setSeverity] = useState<'error' | 'success'>('error');
   
   const { signup, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
@@ -39,6 +40,14 @@ const Signup: React.FC = () => {
     
     if (password !== confirmPassword) {
       setError('Passwords do not match');
+      setSeverity('error');
+      setOpen(true);
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      setSeverity('error');
       setOpen(true);
       return;
     }
@@ -47,9 +56,13 @@ const Signup: React.FC = () => {
       setError('');
       setLoading(true);
       await signup(email, password);
-      navigate('/dashboard');
+      setSeverity('success');
+      setError('Account created successfully! Redirecting...');
+      setOpen(true);
+      setTimeout(() => navigate('/'), 2000);
     } catch (err) {
-      setError('Failed to create an account');
+      setError(err instanceof Error ? err.message : 'Failed to create account');
+      setSeverity('error');
       setOpen(true);
     } finally {
       setLoading(false);
@@ -61,9 +74,13 @@ const Signup: React.FC = () => {
       setError('');
       setLoading(true);
       await loginWithGoogle();
-      navigate('/dashboard');
+      setSeverity('success');
+      setError('Signed in successfully! Redirecting...');
+      setOpen(true);
+      setTimeout(() => navigate('/'), 2000);
     } catch (err) {
-      setError('Failed to sign up with Google');
+      setError(err instanceof Error ? err.message : 'Failed to sign up with Google');
+      setSeverity('error');
       setOpen(true);
     } finally {
       setLoading(false);
@@ -94,6 +111,7 @@ const Signup: React.FC = () => {
                 autoFocus
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}
               />
               <TextField
                 margin="normal"
@@ -106,6 +124,8 @@ const Signup: React.FC = () => {
                 autoComplete="new-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                disabled={loading}
+                helperText="Password must be at least 6 characters long"
               />
               <TextField
                 margin="normal"
@@ -117,6 +137,7 @@ const Signup: React.FC = () => {
                 id="confirm-password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
+                disabled={loading}
               />
               <Button
                 type="submit"
@@ -125,7 +146,7 @@ const Signup: React.FC = () => {
                 sx={{ mt: 3, mb: 2 }}
                 disabled={loading}
               >
-                Sign Up
+                {loading ? <CircularProgress size={24} /> : 'Sign Up'}
               </Button>
               
               <Divider sx={{ my: 2 }}>OR</Divider>
@@ -138,7 +159,7 @@ const Signup: React.FC = () => {
                 disabled={loading}
                 sx={{ mb: 2 }}
               >
-                Sign up with Google
+                {loading ? <CircularProgress size={24} /> : 'Sign up with Google'}
               </Button>
               
               <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
@@ -151,8 +172,18 @@ const Signup: React.FC = () => {
         </Paper>
       </Box>
       
-      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-        <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+      <Snackbar 
+        open={open} 
+        autoHideDuration={6000} 
+        onClose={handleClose}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert 
+          onClose={handleClose} 
+          severity={severity} 
+          sx={{ width: '100%' }}
+          variant="filled"
+        >
           {error}
         </Alert>
       </Snackbar>
